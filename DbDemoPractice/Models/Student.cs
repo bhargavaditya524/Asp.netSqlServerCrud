@@ -12,6 +12,8 @@ public partial class Student
     public string? StuName { get; set; }
     [DisplayName("Gender")]
     public string? StuGender { get; set; }
+    [DisplayName("Class")]
+    public int Class { get; set; }
     [DisplayName("Date-Of-Birth")]
     public DateOnly? StuDob { get; set; }
     [DisplayName("Phone Number")]

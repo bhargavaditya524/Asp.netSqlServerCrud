@@ -31,6 +31,7 @@ public partial class TestDbContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("roll");
             entity.Property(e => e.StuDob).HasColumnName("stuDOB");
+            entity.Property(e => e.Class).HasColumnName("class");
             entity.Property(e => e.StuGender)
                 .HasMaxLength(50)
                 .IsUnicode(false)

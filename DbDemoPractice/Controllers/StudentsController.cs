@@ -20,9 +20,35 @@ namespace DbDemoPractice.Controllers
 
         // GET: Students
         [Route("StudentDetails")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? classFilter, string? genderFilter)
         {
-            return View(await _context.Students.ToListAsync());
+            var classes = await _context.Students
+                .Select(student => student.Class)
+                .Distinct()
+                .OrderBy(classValue => classValue)
+                .ToListAsync();
+            var genders = await _context.Students
+                .Where(student => student.StuGender != null && student.StuGender != "")
+                .Select(student => student.StuGender!)
+                .Distinct()
+                .OrderBy(gender => gender)
+                .ToListAsync();
+
+            ViewBag.Classes = new SelectList(classes, classFilter);
+            ViewBag.Genders = new SelectList(genders, genderFilter);
+
+            var students = _context.Students.AsQueryable();
+            if (classFilter.HasValue)
+            {
+                students = students.Where(student => student.Class == classFilter.Value);
+            }
+
+            if (!string.IsNullOrEmpty(genderFilter))
+            {
+                students = students.Where(student => student.StuGender == genderFilter);
+            }
+
+            return View(await students.ToListAsync());
         }
 
         // GET: Students/Details/5
@@ -54,7 +80,7 @@ namespace DbDemoPractice.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Roll,StuName,StuGender,StuDob,StuPhone")] Student student)
+        public async Task<IActionResult> Create([Bind("Roll,StuName,StuGender,Class,StuDob,StuPhone")] Student student)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +112,7 @@ namespace DbDemoPractice.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Roll,StuName,StuGender,StuDob,StuPhone")] Student student)
+        public async Task<IActionResult> Edit(int id, [Bind("Roll,StuName,StuGender,Class,StuDob,StuPhone")] Student student)
         {
             if (id != student.Roll)
             {
